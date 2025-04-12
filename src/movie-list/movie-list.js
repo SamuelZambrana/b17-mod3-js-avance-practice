@@ -23,22 +23,6 @@ export function createMoviesContainerElement(movieData) {
     return moviesContainerElement;
 }
 
-export function createMovieCardElement(movie) {
-    const movieElem = createMovieElement();
-
-    movieElem.appendChild(createMoviePosterElement(movie.poster_path)); 
-    movieElem.appendChild(createMovieTitleElement(movie.title));
-    movieElem.appendChild(createMovieDescriptionElement(movie.overview)); 
-     
-     return movieElem;
-}
-
-function createMovieElement() {
-    const movieElem = document.createElement('div');
-    movieElem.classList.add('movie');
-    return movieElem;
-}
-
 function createMovieListRowElement() {
     const rowElem = document.createElement('div');
     rowElem.className = 'row';
@@ -50,8 +34,8 @@ function createMovieGridElement(movie) {
     movieGridElem.className = 'movie-grid col-lg-3', 'col-md-4', 'col-sm-6';
     movieGridElem.appendChild(createMoviePosterElement(movie.poster_path, movie.id));
     movieGridElem.appendChild(createMovieTitleElement(movie.title));
-    movieGridElem.appendChild(createMovieTitleElement(movie.rating, movie.year));
-    movieGridElem.appendChild(createMovieDescriptionElement(movie.overview));
+    movieGridElem.appendChild(createMovieDataElement(movie.vote_average, movie.release_date));
+    movieGridElem.appendChild(createMovieOverviewElement(movie.overview));
     return movieGridElem;
 }
 
@@ -84,12 +68,19 @@ function createMovieTitleElement(title) {
 
 /**
  * 
- * @param {string} description 
+ * @param {string} overview 
  * @returns {HTMLDivElement} Elemento div con la descripción como texto
  */
-function createMovieDescriptionElement(description) {
+function createMovieOverviewElement(overview) {
     const descriptionElem = document.createElement('div');
-    descriptionElem.textContent = description;
-    descriptionElem.classList.add('movie-description');
+    descriptionElem.textContent = overview;
+    descriptionElem.classList.add('movie-overview');
     return descriptionElem;
+}
+
+function createMovieDataElement(rating, year) {
+    const movieDataElem = document.createElement('div');
+    movieDataElem.classList.add('movie-data');
+    movieDataElem.textContent = `Valoracion: ${rating} | Año: ${year}`;
+    return movieDataElem;
 }

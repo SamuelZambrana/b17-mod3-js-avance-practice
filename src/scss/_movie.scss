@@ -1,8 +1,43 @@
 .movie-toolbar-wrapper {
-  @extend .py-2;
+  @extend .py-2; /* Extiende el padding vertical */
+  @extend .container-fluid; /* Asegura el ancho completo como el navbar */
   background-color: #eee;
   border-bottom: 1px solid #ddd;
 }
+
+.icon-grid {
+  &::before {
+    content: "";
+    background-image: url("../../public/grid-layout.svg"); /* Reemplaza con la ruta real de tu icono */
+    background-size: cover;
+    width: 2rem; /* Ajusta el tamaño según lo necesites */
+    height: 2rem;
+    display: inline-block;
+    margin-right: 0.5rem; /* Espaciado opcional */
+  }
+}
+
+.icon-list {
+  &::before {
+    content: "";
+    background-image: url("../../public/list-layout.svg"); /* Reemplaza con la ruta real de tu icono */
+    background-size: cover;
+    width: 2rem; /* Ajusta el tamaño según lo necesites */
+    height: 2rem;
+    display: inline-block;
+    margin-right: 0.5rem; /* Espaciado opcional */
+  }
+}
+
+.icon-grid,
+.icon-list {
+  border: none; /* Elimina los bordes */
+  background: none; /* Opcional, elimina el fondo si es necesario */
+  padding: 0; /* Ajusta el padding si es necesario */
+  outline: none; /* Elimina el outline en caso de focus */
+  margin-right: 1rem; /* Añade espacio entre los botones */
+}
+
 
 #movie-list-container {
   @extend .mt-5;
@@ -38,6 +73,7 @@
     margin: 6px 0 30px;
     line-height: 1.5;
     display: -webkit-box;
+    line-clamp: 4;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -45,15 +81,12 @@
 }
 
 .movie-grid {
-  @extend .col-lg-3;
-  @extend .col-md-4;
-  @extend .col-sm-6;
-
   .movie-poster {
     height: 400px;
   }
 
   .movie-overview {
+    line-clamp: 4;
     -webkit-line-clamp: 4;
   }
 }
