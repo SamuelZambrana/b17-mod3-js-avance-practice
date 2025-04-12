@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { apiConfig } from './apiConfig';
 
-export const movieListType = {
-    Popular: 'popular',
-    Incoming: 'incoming',
-    MostRated: 'most_rated',
-    NowPlaying: 'now_playing',
-};
-
 /**
  * Obtiene los datos de la lista de películas según el tipo
  * @param {string} type - Tipo de películas (popular, topRated, etc.)
@@ -37,5 +30,25 @@ function getMovieListUrl(type, apiConfig) {
     movieListUrl += `&language=${apiConfig.langIso}`;
     movieListUrl += `&page=1`;
     return movieListUrl;
+}
+
+export async function getMovieDetailsData(id) {
+    const url = getMovieDetailsUrl(id);
+    try {
+        const response = await axios.get(url);
+        return response?.data;
+    } catch (error) {
+        console.error('Error al obtener los detalles de la película:', error);
+        throw error;
+    }
+}
+
+function getMovieDetailsUrl(id) {
+    let movieDetailsUrl = apiConfig.baseUrl;
+    movieDetailsUrl += `movie/${id}`
+    movieDetailsUrl += `?api_key=${apiConfig.apiKey}`;
+    movieDetailsUrl += `&language=${apiConfig.langIso}`;
+    movieDetailsUrl += `&append_to_response=credits`;
+    return movieDetailsUrl;
 }
     

@@ -1,6 +1,6 @@
 import "./scss/style.scss";
 import { getAppElem } from "./util/dom";
-import { getMovieListData } from "./api/api";
+import { getMovieListData, getMovieDetailsData } from "./api/api";
 import { createMoviesContainerElement, movieListType } from "./movie-list/movie-list";
 
 
