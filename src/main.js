@@ -1,32 +1,49 @@
 import "./scss/style.scss";
 import { getAppElem } from "./util/dom";
+import { createMovieListToolbar } from "./movie-detail/movie-list-toolbar"; 
 import { getMovieListData, getMovieDetailsData } from "./api/api";
-import { createMoviesContainerElement, movieListType } from "./movie-list/movie-list";
-
+import { movieViewTypes, state, selectOptions } from "./api/apiConfig";
+import { createMoviesContainerElement} from "./movie-list/movie-list";
+import { movieListType } from "./api/apiConfig";
+import { setupListViewButton, setupGridViewButton } from "./event/event";
 
 async function star() {
     try {
-        const { results: movieListArray } = await getMovieListData(movieListType.NowPlaying);
-
+        const { results: movieListArray } = await getMovieListData(state.movieListType);
+        
+        // Vamos guardado el array de películas en el objeto selectOptions
+        selectOptions.movieDataArray = movieListArray;
+        
         if (!movieListArray || movieListArray.length === 0) {
             console.warn('No se encontraron películas populares.');
             return;
         }
 
         // Crear el contenedor de películas
-        const moviesContainerElement = createMoviesContainerElement(movieListArray);
+        const moviesContainerElement = createMoviesContainerElement(selectOptions.movieDataArray ,state.movieGridType);
 
-        // Añadir el contenedor al DOM
+        // Obtener el elemento principal de la aplicación #app
         const appElement = getAppElem();
+         // Crear el contenedor de la barra de herramientass
+        appElement.appendChild(createMovieListToolbar())
+        // Añadir el contenedor de películas al DOM
         appElement.appendChild(moviesContainerElement);
 
         console.log('Películas añadidas correctamente al DOM.');
+
+        // Configurar el botón de vista lista
+        setupListViewButton(movieListArray);
+        // Configurar el botón de vista cuadrícula
+        setupListViewButton(movieListArray);
+     
     } catch (error) {
         console.error('Error al añadir las películas:', error);
     }
 }
 
 star();
+console.log(`Tipo de vista solicitado: ${state.movieGridType}`);
+
 
 /*
 async function addMovieListGrid() {
