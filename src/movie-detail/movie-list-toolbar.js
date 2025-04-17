@@ -17,7 +17,7 @@ export function createMovieListToolbar() {
 
 // Funcion para crear los botones del wrapper
 function createButtonsWrapper() {
-    const buttonsWrapper = createDivElementWithClass(["d-flex"]);
+    const buttonsWrapper = createDivElementWithClass(["view-type-select"]);
     buttonsWrapper.appendChild(createIconGridElement());
     buttonsWrapper.appendChild(createIconListElement());
     return buttonsWrapper;

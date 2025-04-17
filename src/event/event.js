@@ -1,74 +1,102 @@
 import { createMoviesContainerElement } from '../movie-list/movie-list.js'; 
-import { getAppElem , listViewElem, gridViewElem} from '../util/dom.js'; 
+import { getAppElem , listViewElem, gridViewElem, getMoviesListContainerElem, movieTypeSelectElem} from '../util/dom.js'; 
 import { movieViewTypes, state } from '../api/apiConfig.js'; 
-import { createMovieListToolbar } from '../movie-detail/movie-list-toolbar.js';
 
-export function setupListViewButton(movieListArray) {
+
+export function setupViewButtons(movieListArray) {
+    const gridButton = gridViewElem(); // Obtener el botón de vista grid
     const listButton = listViewElem(); // Obtener el botón de vista list
 
-    if (!listButton) {
-        console.error('No se encontró el botón de vista list');
+    if (!gridButton || !listButton) {
+        console.error('No se encontraron los botones de vista.');
         return;
     }
 
+    // Función interna para actualizar la vista
+    const updateMoviesView = (viewType) => {
+        const appElement = getAppElem(); // Contenedor principal
+        const moviesContainer = getMoviesListContainerElem(); // Contenedor de películas
+
+        // Eliminar el contenedor de películas si existe
+        if (moviesContainer) {
+            moviesContainer.remove();
+        }
+
+        // Crear nuevo contenedor de películas según la vista seleccionada
+        const moviesContainerElement = createMoviesContainerElement(movieListArray, viewType);
+        appElement.appendChild(moviesContainerElement);
+
+        console.log(`Vista cambiada a "${viewType}".`);
+    };
+
+    // Eventos para los botones
+    gridButton.addEventListener('click', () => {
+        try {
+            updateMoviesView(movieViewTypes.Grid); // Actualizar vista al modo grid
+
+            // Cambiar estado activo de los botones
+            gridButton.classList.add('active'); // Activar botón de vista grid
+            listButton.classList.remove('active'); // Desactivar botón de vista list
+        } catch (error) {
+            console.error('Error al cambiar a la vista "grid":', error);
+        }
+    });
+
     listButton.addEventListener('click', () => {
         try {
-            const appElement = getAppElem(); // Contenedor principal
+            updateMoviesView(movieViewTypes.List); // Actualizar vista al modo list
 
-            // Función interna para actualizar la vista
-            const updateMoviesView = (viewType) => {
-                const moviesContainer = document.getElementById('movies-list-container'); // Contenedor de películas
-                if (moviesContainer) {
-                    moviesContainer.remove();
-                }
-
-                const moviesContainerElement = createMoviesContainerElement(movieListArray, viewType);
-                appElement.appendChild(moviesContainerElement);
-
-                console.log(`Vista cambiada a "${viewType}".`);
-            };
-
-            // Llamar a la función interna para la vista list
-            updateMoviesView(movieViewTypes.List);
+            // Cambiar estado activo de los botones
+            listButton.classList.add('active'); // Activar botón de vista list
+            gridButton.classList.remove('active'); // Desactivar botón de vista grid
         } catch (error) {
             console.error('Error al cambiar a la vista "list":', error);
         }
     });
 }
 
-export function setupGridViewButton(movieListArray) {
-    const gridButton = gridViewElem(); // Obtener el botón de vista grid
+export function setupMovieTypeSelect(movieListCallback) {
+    const movieTypeSelect = document.getElementById("movie-type-select"); // Obtener el elemento select por ID
 
-    if (!gridButton) {
-        console.error('No se encontró el botón de vista grid');
+    if (!movieTypeSelect) {
+        console.error("No se encontró el elemento select de tipos de películas.");
         return;
     }
 
-    gridButton.addEventListener('click', () => {
+    // Agregar evento para manejar cambios en el select
+    movieTypeSelect.addEventListener("change", async () => {
         try {
-            const appElement = getAppElem(); // Contenedor principal
+            const selectedType = movieTypeSelect.value; // Obtener el valor seleccionado
+            console.log(`Tipo de película seleccionado: ${selectedType}`);
 
-            // Función interna para actualizar la vista
-            const updateMoviesView = (viewType) => {
-                const moviesContainer = document.getElementById('movies-list-container'); // Contenedor de películas
-                if (moviesContainer) {
-                    moviesContainer.remove();
-                }
+            // Llamar al callback para obtener los datos de las películas según el tipo seleccionado
+            const movieListArray = await movieListCallback(selectedType);
 
-                const moviesContainerElement = createMoviesContainerElement(movieListArray, viewType);
-                appElement.appendChild(moviesContainerElement);
+            if (!movieListArray || movieListArray.length === 0) {
+                console.warn("No se encontraron películas para el tipo seleccionado.");
+                return;
+            }
 
-                console.log(`Vista cambiada a "${viewType}".`);
-            };
+            // Recuperar el contenedor principal
+            const appElement = getAppElem();
 
-            // Llamar a la función interna para la vista grid
-            updateMoviesView(movieViewTypes.Grid);
+            // Eliminar el contenedor de películas existente, si lo hay
+            const moviesContainer = document.getElementById("movies-list-container");
+            if (moviesContainer) {
+                moviesContainer.remove(); // Eliminar el contenedor existente
+            }
+
+            // Crear y añadir el nuevo contenedor de películas
+            const moviesContainerElement = createMoviesContainerElement(movieListArray, movieViewTypes.Grid); // Vista predeterminada (grid)
+            appElement.appendChild(moviesContainerElement);
+
+            console.log("Películas actualizadas según el tipo seleccionado.");
         } catch (error) {
-            console.error('Error al cambiar a la vista "grid":', error);
+            console.error("Error al cambiar el tipo de películas:", error);
         }
-    });
-}
+});
 
+}
 
 /*
 addMovieGridLayoutClickListener

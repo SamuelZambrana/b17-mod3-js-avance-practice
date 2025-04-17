@@ -2,6 +2,10 @@ export function getAppElem() {
     return getElementBySelector('#app')
 }
 
+export function getMoviesListContainerElem() {
+    return getElementBySelector('#movies-list-container')
+}
+
 export function movieTypeSelectElem() {
     return getElementBySelector('#movie-type-select')
 }
