@@ -1,4 +1,4 @@
-import { apiConfig, movieViewTypes } from '../api/apiConfig';
+import { apiConfig, movieViewTypes, movieListType } from '../api/apiConfig';
 
 
 export function createMoviesContainerElement(movieData, viewType) {
@@ -21,7 +21,7 @@ export function createMoviesContainerElement(movieData, viewType) {
         } else {
             throw new Error(`Vista no soportada: ${viewType}`);
         }
-        
+       
         rowElement.appendChild(movieElement);
     });
 

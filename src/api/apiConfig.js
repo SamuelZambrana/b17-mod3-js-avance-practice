@@ -1,8 +1,8 @@
 export const movieListType = {
-    Popular: 'popular',
-    Incoming: 'incoming',
-    MostRated: 'most_rated',
-    NowPlaying: 'now_playing',
+    Populares: 'popular',
+    Proximamente: 'upcoming',
+    Mas_valoradas: 'top_rated',
+    En_cartelera: 'now_playing',
 };
 
 export const movieViewTypes = {
@@ -11,9 +11,9 @@ export const movieViewTypes = {
     Details: 'movie-details',
 }
 
-export const state = {
-    movieListType: movieListType.NowPlaying,
-    movieGridType: movieViewTypes.Grid,
+export let state = {
+    movieListType: movieListType.En_cartelera,
+    movieViewType: movieViewTypes.Grid,
     page: 1,
 }
 

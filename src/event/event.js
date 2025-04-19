@@ -1,7 +1,8 @@
+import axios from 'axios';
 import { createMoviesContainerElement } from '../movie-list/movie-list.js'; 
 import { getAppElem , listViewElem, gridViewElem, getMoviesListContainerElem, movieTypeSelectElem} from '../util/dom.js'; 
-import { movieViewTypes, state } from '../api/apiConfig.js'; 
-
+import { movieViewTypes, state, selectOptions, movieListType} from '../api/apiConfig.js'; 
+import { getMovieListData } from '../api/api.js';
 
 export function setupViewButtons(movieListArray) {
     const gridButton = gridViewElem(); // Obtener el botón de vista grid
@@ -55,48 +56,110 @@ export function setupViewButtons(movieListArray) {
     });
 }
 
-export function setupMovieTypeSelect(movieListCallback) {
-    const movieTypeSelect = document.getElementById("movie-type-select"); // Obtener el elemento select por ID
 
-    if (!movieTypeSelect) {
-        console.error("No se encontró el elemento select de tipos de películas.");
-        return;
-    }
+export function setupMovieTypeChangeEvent(selectElementId) {
+    try {
+        const movieTypeSelect = document.getElementById(selectElementId);
+        if (!movieTypeSelect) {
+            throw new Error(`No se encontró el elemento select con ID: ${selectElementId}`);
+        }
 
-    // Agregar evento para manejar cambios en el select
-    movieTypeSelect.addEventListener("change", async () => {
-        try {
-            const selectedType = movieTypeSelect.value; // Obtener el valor seleccionado
-            console.log(`Tipo de película seleccionado: ${selectedType}`);
+        movieTypeSelect.addEventListener('change', async (event) => {
+            const selectedType = event.target.value;
+            console.log('Valor recibido desde el evento change:', selectedType);
 
-            // Llamar al callback para obtener los datos de las películas según el tipo seleccionado
-            const movieListArray = await movieListCallback(selectedType);
+            // Normalizar el valor recibido
+            const normalizedSelectedType = selectedType.toLowerCase();
 
-            if (!movieListArray || movieListArray.length === 0) {
-                console.warn("No se encontraron películas para el tipo seleccionado.");
+            // Validar el tipo seleccionado
+            if (!Object.values(movieListType).includes(normalizedSelectedType)) {
+                console.error(`Tipo de película no válido: ${normalizedSelectedType}`);
                 return;
             }
 
-            // Recuperar el contenedor principal
-            const appElement = getAppElem();
-
-            // Eliminar el contenedor de películas existente, si lo hay
-            const moviesContainer = document.getElementById("movies-list-container");
-            if (moviesContainer) {
-                moviesContainer.remove(); // Eliminar el contenedor existente
+            try {
+                console.log(`Lanzando consulta para el tipo de película: ${normalizedSelectedType}`);
+                const updatedList = await updateMovieType(normalizedSelectedType);
+                console.log(`Películas actualizadas para el tipo "${normalizedSelectedType}":`, updatedList);
+            } catch (error) {
+                console.error(`Error al actualizar las películas para el tipo "${normalizedSelectedType}":`, error);
             }
+        });
 
-            // Crear y añadir el nuevo contenedor de películas
-            const moviesContainerElement = createMoviesContainerElement(movieListArray, movieViewTypes.Grid); // Vista predeterminada (grid)
-            appElement.appendChild(moviesContainerElement);
-
-            console.log("Películas actualizadas según el tipo seleccionado.");
-        } catch (error) {
-            console.error("Error al cambiar el tipo de películas:", error);
-        }
-});
-
+        console.log(`Evento de cambio configurado para el elemento select con ID: ${selectElementId}`);
+    } catch (error) {
+        console.error('Error al configurar el evento de cambio de tipo de película:', error);
+    }
 }
+
+
+
+async function updateMovieType(newMovieType) {
+    try {
+        // Validar que el tipo de película proporcionado sea válido
+        if (!Object.values(movieListType).includes(newMovieType)) {
+            throw new Error(`Tipo de película inválido: ${newMovieType}`);
+        }
+
+        // Recuperar el tipo actual de película
+        const currentMovieType = state.movieListType;
+        console.log(`Tipo de película actual: "${currentMovieType}"`);
+
+        // Si el tipo de película ya es el seleccionado, no realizar actualizaciones innecesarias
+        if (currentMovieType === newMovieType) {
+            console.log(`El tipo de película ya está establecido como "${newMovieType}". No se realizaron cambios.`);
+            return currentMovieType; // Devuelve el tipo actual si no hay cambios
+        }
+
+        // Actualizar el objeto state con el nuevo tipo
+        state.movieListType = newMovieType;
+
+      // Llamar a getMovieListData para obtener los datos del nuevo tipo de película
+      const { results: movieListArray } = await getMovieListData(state.movieListType);
+      if (!Array.isArray(movieListArray) || movieListArray.length === 0) {
+          throw new Error('No se encontraron películas para el tipo seleccionado o la lista está vacía.');
+      }
+
+        if (!Array.isArray(movieListArray) || movieListArray.length === 0) {
+            throw new Error('No se encontraron películas para el tipo seleccionado o la lista está vacía.');
+        }
+
+        // Actualizar selectOptions con los datos obtenidos
+        selectOptions.listType = state.movieListType;
+        selectOptions.movieDataArray = movieListArray;
+
+        // Actualizar el contenedor de películas en la interfaz
+        const moviesContainer = getMoviesListContainerElem();
+        if (moviesContainer) {
+            moviesContainer.innerHTML = ''; // Vaciar el contenido actual
+
+            const newMoviesContainer = createMoviesContainerElement(movieListArray, state.movieViewType);
+            moviesContainer.appendChild(newMoviesContainer);
+
+            console.log(`Contenedor de películas actualizado con el tipo "${newMovieType}".`);
+        } else {
+            console.warn('No se encontró el contenedor de películas para actualizar.');
+        }
+
+        // Actualizar el select de tipo de película, si existe
+        const movieTypeSelect = movieTypeSelectElem();
+        if (movieTypeSelect) {
+            movieTypeSelect.value = newMovieType;
+            console.log('El select de tipo de película fue actualizado.');
+        } else {
+            console.warn('No se encontró el select de tipo de película para actualizar.');
+        }
+
+        // Retornar la lista de películas actualizadas
+        return movieListArray;
+
+    } catch (error) {
+        console.error('Error al actualizar el tipo de película:', error);
+        throw error; // Lanzar el error para que el manejador externo pueda capturarlo
+    }
+}
+
+
 
 /*
 addMovieGridLayoutClickListener

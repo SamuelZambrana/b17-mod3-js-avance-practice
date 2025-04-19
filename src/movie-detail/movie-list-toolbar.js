@@ -65,10 +65,9 @@ function createSelectMovieTypeElement() {
 
     const options = [  
         ["now_Playing", "En Cartelera" ],
-        ["Popular",  "Popular" ],
         ["top_Rated",  "Mejor Valoradas" ],
         ["upcoming",  "Próximamente" ],
-        
+        ["Popular",  "Popular" ],   
     ];
     options.forEach(([value, text], index) => {
         const option = createOptionsElement(value, text);

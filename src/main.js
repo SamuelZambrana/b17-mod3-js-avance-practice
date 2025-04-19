@@ -1,11 +1,10 @@
 import "./scss/style.scss";
-import { getAppElem } from "./util/dom";
+import { getAppElem, getMoviesListContainerElem } from "./util/dom";
 import { createMovieListToolbar } from "./movie-detail/movie-list-toolbar"; 
-import { getMovieListData, getMovieDetailsData } from "./api/api";
-import { movieViewTypes, state, selectOptions } from "./api/apiConfig";
+import { getMovieListData } from "./api/api";
+import { movieViewTypes, state, selectOptions, movieListType } from "./api/apiConfig";
 import { createMoviesContainerElement} from "./movie-list/movie-list";
-import { movieListType } from "./api/apiConfig";
-import { setupViewButtons, setupMovieTypeSelect } from "./event/event";
+import { setupViewButtons, setupMovieTypeChangeEvent} from "./event/event";
 
 async function star() {
     try {
@@ -20,7 +19,7 @@ async function star() {
         }
 
         // Crear el contenedor de películas
-        const moviesContainerElement = createMoviesContainerElement(selectOptions.movieDataArray, state.movieGridType);
+        const moviesContainerElement = createMoviesContainerElement(selectOptions.movieDataArray, state.movieViewType);
 
         // Obtener el elemento principal de la aplicación #app
         const appElement = getAppElem();
@@ -36,8 +35,9 @@ async function star() {
         // Configurar el botón de vista al hacer click
         setupViewButtons(movieListArray);
 
+        //updateMovieType(movieListType.Mas_valoradas)
         // Configurar el select de tipo de película
-        setupMovieTypeSelect(movieListType); // Configura el evento del selector
+        setupMovieTypeChangeEvent('movie-type-select');
         
         console.log('Aplicación inicializada correctamente.');
     } catch (error) {
@@ -45,6 +45,7 @@ async function star() {
     }
 }
 star();
-console.log(`Tipo de vista solicitado: ${state.movieGridType}`);
+
+
 
 
