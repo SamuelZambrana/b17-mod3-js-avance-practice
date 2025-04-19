@@ -3,41 +3,16 @@
   @extend .container-fluid; /* Asegura el ancho completo como el navbar */
   background-color: #eee;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 3rem; /* Espacio entre el toolbar y el contenido */
 }
 
-.icon-grid {
-  &::before {
-    content: "";
-    background-image: url("../../public/grid-layout.svg"); /* Reemplaza con la ruta real de tu icono */
-    background-size: cover;
-    width: 2rem; /* Ajusta el tamaño según lo necesites */
-    height: 2rem;
-    display: inline-block;
-    margin-right: 0.5rem; /* Espaciado opcional */
+.container {
+  .movie-select-auto-width {
+      display: inline-block; // Asegura que no se expanda más allá de su contenido
+      width: auto; // Ajusta el ancho dinámicamente según las opciones
+      min-width: webkit-fill; // Evita que sea demasiado pequeño
   }
 }
-
-.icon-list {
-  &::before {
-    content: "";
-    background-image: url("../../public/list-layout.svg"); /* Reemplaza con la ruta real de tu icono */
-    background-size: cover;
-    width: 2rem; /* Ajusta el tamaño según lo necesites */
-    height: 2rem;
-    display: inline-block;
-    margin-right: 0.5rem; /* Espaciado opcional */
-  }
-}
-
-.icon-grid,
-.icon-list {
-  border: none; /* Elimina los bordes */
-  background: none; /* Opcional, elimina el fondo si es necesario */
-  padding: 0; /* Ajusta el padding si es necesario */
-  outline: none; /* Elimina el outline en caso de focus */
-  margin-right: 1rem; /* Añade espacio entre los botones */
-}
-
 
 #movie-list-container {
   @extend .mt-5;

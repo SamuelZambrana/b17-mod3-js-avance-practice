@@ -2,8 +2,36 @@ export function getAppElem() {
     return getElementBySelector('#app')
 }
 
+export function getMoviesListContainerElem() {
+    return getElementBySelector('#movies-list-container')
+}
+
 export function movieTypeSelectElem() {
     return getElementBySelector('#movie-type-select')
+}
+
+export function viewSelectElem() {
+    return getElementBySelector('.view-type-select')
+}
+
+export function gridViewElem() {
+    return getElementBySelector('#movie-grid')
+}
+
+export function listViewElem() {
+    return getElementBySelector('#movie-list')
+}
+
+export function moviesCategoriesElem() {
+    return getElementBySelector('.movies-categories')
+}
+
+export function createDivElementWithClass(className) {
+    const divElem = document.createElement('div');
+    className.forEach((className) => {
+        divElem.classList.add(className);
+    });
+    return divElem;
 }
 
 function getElementBySelector(selector) {
@@ -14,3 +42,4 @@ function getElementBySelector(selector) {
     }
     return elem;
 }
+

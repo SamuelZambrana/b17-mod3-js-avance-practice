@@ -1,32 +1,76 @@
-import { apiConfig } from '../api/apiConfig';
+import { apiConfig, movieViewTypes, movieListType } from '../api/apiConfig';
 
-export const movieListType = {
-    Popular: 'popular',
-    Incoming: 'incoming',
-    MostRated: 'most_rated',
-    NowPlaying: 'now_playing',
-};
 
-export function createMoviesContainerElement(movieData) {
+export function createMoviesContainerElement(movieData, viewType) {
     const moviesContainerElement = document.createElement('div');
     moviesContainerElement.id = 'movies-list-container';
     moviesContainerElement.classList.add('container');
     
+    // Crear una fila para contener los elementos de las películas
     const rowElement = createMovieListRowElement();
 
     movieData.forEach(movie => {
-        const movieGridElement = createMovieGridElement(movie);
-        rowElement.appendChild(movieGridElement);
-    })
+        let movieElement;
+        const grid = movieViewTypes.Grid;
+        const list = movieViewTypes.List;
+        // Determinar el tipo de vista: 'grid' o 'list'
+        if (viewType === grid) {
+            movieElement = createMovieGridElement(movie);
+        } else if (viewType === list) {
+            movieElement = createMovieListElement(movie);
+        } else {
+            throw new Error(`Vista no soportada: ${viewType}`);
+        }
+       
+        rowElement.appendChild(movieElement);
+    });
 
     moviesContainerElement.appendChild(rowElement);
-    return moviesContainerElement;
+    return moviesContainerElement; 
 }
 
 function createMovieListRowElement() {
     const rowElem = document.createElement('div');
     rowElem.className = 'row';
     return rowElem;
+}
+
+function createMovieListElement(movie) {
+    // Crear el contenedor principal para una película en modo lista
+    const movieListElem = document.createElement('div');
+    movieListElem.className = 'movie-list-item row align-items-start mb-4'; // Clase específica para vista lista
+
+    // Crear columna para el póster (imagen)
+    const posterCol = document.createElement('div');
+    posterCol.className = 'col-3'; // Ajusta la proporción para el póster en modo lista
+    const posterElem = createMoviePosterElement(movie.poster_path, movie.id);
+    posterElem.className = 'img-fluid rounded'; // Estilo para hacer la imagen fluida y con bordes redondeados
+    posterCol.appendChild(posterElem);
+
+    // Crear columna para los detalles
+    const detailsCol = document.createElement('div');
+    detailsCol.className = 'col-9'; // Ajusta el espacio para los detalles en modo lista
+
+    // Crear y agregar el título de la película
+    const titleElem = createMovieTitleElement(movie.title);
+    titleElem.className = 'h5 mb-2'; // Clase para estilizar el título
+    detailsCol.appendChild(titleElem);
+
+    // Crear y agregar los datos de la película (calificación y fecha de estreno)
+    const dataElem = createMovieDataElement(movie.vote_average, movie.release_date);
+    dataElem.className = 'text-muted mb-2'; // Clase para estilizar el texto de calificación y fecha
+    detailsCol.appendChild(dataElem);
+
+    // Crear y agregar el resumen de la película (overview)
+    const overviewElem = createMovieOverviewElement(movie.overview);
+    overviewElem.className = 'text-justify'; // Clase para justificar el texto del resumen
+    detailsCol.appendChild(overviewElem);
+
+    // Añadir las columnas al contenedor principal
+    movieListElem.appendChild(posterCol);
+    movieListElem.appendChild(detailsCol);
+
+    return movieListElem;
 }
 
 function createMovieGridElement(movie) {
@@ -38,7 +82,6 @@ function createMovieGridElement(movie) {
     movieGridElem.appendChild(createMovieOverviewElement(movie.overview));
     return movieGridElem;
 }
-
 
 /**
  * 
