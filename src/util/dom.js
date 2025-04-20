@@ -26,6 +26,10 @@ export function moviesCategoriesElem() {
     return getElementBySelector('.movies-categories')
 }
 
+export function getButtonBackElem() {
+    return getElementBySelector('.back-button')
+}
+
 export function createDivElementWithClass(className) {
     const divElem = document.createElement('div');
     className.forEach((className) => {

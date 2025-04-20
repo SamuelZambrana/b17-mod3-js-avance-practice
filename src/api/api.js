@@ -23,12 +23,12 @@ export async function getMovieListData(type) {
  * @param {Object} apiConfig - Objeto de configuración con baseUrl, apiKey y langIso
  * @returns {string} URL para la solicitud a la API
  */
-function getMovieListUrl(type, apiConfig) {
+function getMovieListUrl(type, apiConfig, pageNumber = 1) {
     let movieListUrl = apiConfig.baseUrl;
     movieListUrl += `movie/${type}`
     movieListUrl += `?api_key=${apiConfig.apiKey}`;
     movieListUrl += `&language=${apiConfig.langIso}`;
-    movieListUrl += `&page=1`;
+    movieListUrl += `&page=${pageNumber}`;
     return movieListUrl;
 }
 
