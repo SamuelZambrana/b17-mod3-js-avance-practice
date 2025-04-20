@@ -1,8 +1,10 @@
-import axios from 'axios';
 import { createMoviesContainerElement } from '../movie-list/movie-list.js'; 
 import { getAppElem , listViewElem, gridViewElem, getMoviesListContainerElem, movieTypeSelectElem} from '../util/dom.js'; 
 import { movieViewTypes, state, selectOptions, movieListType} from '../api/apiConfig.js'; 
-import { getMovieListData } from '../api/api.js';
+import { getMovieListData, getMovieDetailsData} from '../api/api.js';
+import { createMovieDetailsPage} from '../movie-detail/movie-details.js'
+import { createMovieListToolbar } from '../movie-detail/movie-list-toolbar.js';
+
 
 export function setupViewButtons(movieListArray) {
     const gridButton = gridViewElem(); // Obtener el botón de vista grid
@@ -93,6 +95,97 @@ export function setupMovieTypeChangeEvent(selectElementId) {
 }
 
 
+export function setupMovieDetailsEvent() {
+    try {
+        // Obtener el contenedor principal donde están las películas
+        const moviesContainer = getMoviesListContainerElem(); // Seleccionar contenedor
+
+        if (!moviesContainer) {
+            console.error('No se encontró el contenedor de la lista de películas.');
+            return;
+        }
+
+        // Agregar un evento de clic al contenedor principal
+        moviesContainer.addEventListener('click', async (event) => {
+            const clickedElement = event.target;
+
+            // Buscar el contenedor de la película en el que se hizo clic
+            const movieContainer = clickedElement.closest('.movie-poster'); // Cambiar según tu clase específica
+            if (!movieContainer) {
+                console.warn('El clic no se realizó sobre un contenedor válido de película.');
+                return;
+            }
+
+            // Obtener el ID de la película desde un atributo personalizado
+            const movieId = movieContainer.getAttribute('data-movie-id');
+            if (!movieId) {
+                console.error('No se encontró el atributo "data-movie-id" en el contenedor.');
+                return;
+            }
+
+            try {
+                // Actualizar el estado a la página 2
+                state.page = 2;
+                console.log(`Navegando a la página ${state.page}: Detalles de la película.`);
+                
+                 //Recuperamos la vista de la bararra de herramientas
+                createMovieListToolbar()
+               
+                // Actualizar la visibilidad de la barra de herramientas
+                updateToolbarVisibility();
+
+                // Obtener los datos de la película
+                const movieData = await getMovieDetailsData(movieId);
+
+                // Crear la página de detalles de la película
+                const movieDetailsContainer = createMovieDetailsPage(movieData);
+
+            } catch (error) {
+                console.error(`Error al obtener los detalles de la película con ID "${movieId}":`, error);
+            }
+        });
+
+        console.log('Evento de detalles de película configurado correctamente.');
+    } catch (error) {
+        console.error('Error al configurar el evento de detalles de película:', error);
+    }
+}
+
+// Función para el evento de retroceso
+export function setupBackButtonEvent() {
+    try {
+        const backButton = document.getElementById('back-button');
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.history.back(); // Regresar a la página anterior
+            });
+            console.log('Evento de retroceso agregado correctamente.');
+        } else {
+            console.error('El botón "Back" no existe en el DOM.');
+        }
+    } catch (error) {
+        console.error('Error al añadir el evento de retroceso:', error);
+    }
+}
+
+
+function updateToolbarVisibility() {
+    // Seleccionar los elementos de la barra de herramientas
+    const buttonsWrapper = document.querySelector('.view-type-select'); // Modos de vista
+    const selectMovieTypeElement = document.getElementById('movie-type-select'); // Selector de tipo de películas
+    const backButton = document.getElementById('back-button'); // Botón de retroceso
+
+    // Validar que los elementos existan antes de aplicar los cambios
+    if (buttonsWrapper) {
+        buttonsWrapper.style.display = 'none'; // Ocultar modos de vista
+    }
+    if (selectMovieTypeElement) {
+        selectMovieTypeElement.style.display = 'none'; // Ocultar selector de tipos de películas
+    }
+    if (backButton) {
+        backButton.style.display = 'block'; // Mostrar el botón de retroceso
+    }
+}
 
 async function updateMovieType(newMovieType) {
     try {
@@ -158,11 +251,3 @@ async function updateMovieType(newMovieType) {
         throw error; // Lanzar el error para que el manejador externo pueda capturarlo
     }
 }
-
-
-
-/*
-addMovieGridLayoutClickListener
-addMovieListLayoutClickListener
-addMovieTypeSelectChangeListener
-*/

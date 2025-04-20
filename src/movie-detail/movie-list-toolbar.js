@@ -2,18 +2,57 @@ import { createDivElementWithClass } from "../util/dom";
 
 
 export function createMovieListToolbar() {
+    // Crear el contenedor principal de la barra de herramientas
     const wrapper = createDivElementWithClass(["movie-toolbar-wrapper"]);
     const container = createDivElementWithClass(["container"]);
     const flexDiv = createDivElementWithClass(["d-flex", "justify-content-between"]);
-    
-    flexDiv.appendChild(createButtonsWrapper());
-    flexDiv.appendChild(createSelectMovieTypeElement());
 
+    // Crear los elementos de la barra de herramientas
+    const backButton = createBackButton();
+    const buttonsWrapper = createButtonsWrapper();
+    const selectMovieTypeElement = createSelectMovieTypeElement();
+
+    // Configurar la visibilidad inicial de los elementos
+    if (backButton) {
+        backButton.style.display = 'none'; // El botón de retroceso estará oculto inicialmente
+    }
+
+    if (buttonsWrapper) {
+        buttonsWrapper.style.display = 'block'; // Mostrar los botones de tipo de vista
+    }
+
+    if (selectMovieTypeElement) {
+        selectMovieTypeElement.style.display = 'block'; // Mostrar el selector de tipo de películas
+    }
+
+    // Añadir los elementos al contenedor flex
+    flexDiv.appendChild(buttonsWrapper);
+    flexDiv.appendChild(selectMovieTypeElement);
+    flexDiv.appendChild(backButton);
+
+    // Agregar el contenedor flex al contenedor principal
     container.appendChild(flexDiv);
     wrapper.appendChild(container);
 
-    return wrapper;
+    return wrapper; // Retornar el contenedor principal de la barra de herramientas
 }
+
+// Función para crear el botón de retroceso
+function createBackButton() {
+    try {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.id = 'back-button';
+        button.className = 'btn btn-icon';
+        button.innerHTML = `<img src="arrow-big-left-line.svg" alt="Regresar" style="width: 48px; height: 48px;">`;
+       
+        return button;
+    } catch (error) {
+        console.error('Error al crear el botón "Back":', error);
+        return null;
+    }
+}
+
 
 // Funcion para crear los botones del wrapper
 function createButtonsWrapper() {

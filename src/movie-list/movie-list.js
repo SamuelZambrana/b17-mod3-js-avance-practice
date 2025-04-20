@@ -1,4 +1,4 @@
-import { apiConfig, movieViewTypes, movieListType } from '../api/apiConfig';
+import { apiConfig, movieViewTypes } from '../api/apiConfig';
 
 
 export function createMoviesContainerElement(movieData, viewType) {
@@ -88,7 +88,7 @@ function createMovieGridElement(movie) {
  * @param {string} posterUrl 
  * @returns {HTMLImageElement} Elemento img con el posterUrl como src
  */
-function createMoviePosterElement(posterUrl, id) {
+export function createMoviePosterElement(posterUrl, id) {
     const imgElem = document.createElement('img');
     imgElem.setAttribute('src', apiConfig.posterBaseUrl + posterUrl);
     imgElem.setAttribute('alt', 'movie poster');
